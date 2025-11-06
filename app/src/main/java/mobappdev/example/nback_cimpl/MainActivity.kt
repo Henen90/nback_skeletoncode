@@ -48,11 +48,17 @@ class MainActivity : ComponentActivity() {
                     var showGameScreen by remember {mutableStateOf(false)}
 
                     if(showGameScreen){
-                        GameScreen()
+                        GameScreen(
+                            vm = gameViewModel,
+                            onBackToMenuClicked = {
+                                showGameScreen = false
+                            })
                     } else {
                         HomeScreen(
                             vm = gameViewModel,
-                            onStartGameClicked = {showGameScreen = true}
+                            onStartGameClicked = {
+                                gameViewModel.startGame()
+                                showGameScreen = true}
                         )
                     }
                 }
