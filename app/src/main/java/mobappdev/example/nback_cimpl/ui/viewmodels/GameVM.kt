@@ -62,7 +62,9 @@ class GameVM(
         get() = _highscore
 
     // nBack is currently hardcoded
-    override val nBack: Int = 2
+    //private val _nBack = MutableStateFlow(2)
+    override val nBack: Int =2
+
 
     private var job: Job? = null  // coroutine job for the game event
     private val eventInterval: Long = 2000L  // 2000 ms (2s)

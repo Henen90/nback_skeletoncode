@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import mobappdev.example.nback_cimpl.R
 import mobappdev.example.nback_cimpl.ui.viewmodels.FakeVM
+import mobappdev.example.nback_cimpl.ui.viewmodels.GameType
 import mobappdev.example.nback_cimpl.ui.viewmodels.GameViewModel
 
 /**
@@ -49,10 +50,11 @@ import mobappdev.example.nback_cimpl.ui.viewmodels.GameViewModel
 
 @Composable
 fun HomeScreen(
-    vm: GameViewModel
+    vm: GameViewModel, onStartGameClicked: () -> Unit
 ) {
     val highscore by vm.highscore.collectAsState()  // Highscore is its own StateFlow
     val gameState by vm.gameState.collectAsState()
+    //val nBack by vm.nBack.
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -93,10 +95,14 @@ fun HomeScreen(
                 }
             }
             Text(
-                modifier = Modifier.padding(16.dp),
-                text = "Start Game".uppercase(),
-                style = MaterialTheme.typography.displaySmall
+                text = "Selected mode: ${gameState.gameType.name}"
             )
+            Button(
+                onClick = onStartGameClicked,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("Start Game".uppercase())
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -105,10 +111,10 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    // Todo: change this button behaviour
+                    vm.setGameType(GameType.Audio) // Todo: change this button behaviour, started
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = "Hey! you clicked the audio button"
+                            message = "Game type set to AUDIO"
                         )
                     }
                 }) {
@@ -122,11 +128,10 @@ fun HomeScreen(
                 }
                 Button(
                     onClick = {
-                        // Todo: change this button behaviour
+                        vm.setGameType(GameType.Visual) // Todo: change this button behaviour, started
                         scope.launch {
                             snackBarHostState.showSnackbar(
-                                message = "Hey! you clicked the visual button",
-                                duration = SnackbarDuration.Short
+                                message = "Game type set to VISUAL"
                             )
                         }
                     }) {
@@ -148,6 +153,6 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     // Since I am injecting a VM into my homescreen that depends on Application context, the preview doesn't work.
     Surface(){
-        HomeScreen(FakeVM())
+        HomeScreen(FakeVM()) {}
     }
 }
