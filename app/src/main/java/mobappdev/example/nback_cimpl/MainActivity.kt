@@ -52,7 +52,10 @@ class MainActivity : ComponentActivity() {
                             vm = gameViewModel,
                             onBackToMenuClicked = {
                                 showGameScreen = false
-                            })
+                            },
+                            onStartGameClicked = {
+                                gameViewModel.startGame()
+                        })
                     } else {
                         HomeScreen(
                             vm = gameViewModel,

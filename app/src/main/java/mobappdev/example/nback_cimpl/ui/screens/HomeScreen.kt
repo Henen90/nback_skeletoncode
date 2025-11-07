@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,13 +24,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -56,9 +59,19 @@ fun HomeScreen(
 ) {
     val highscore by vm.highscore.collectAsState()  // Highscore is its own StateFlow
     val gameState by vm.gameState.collectAsState()
-    //val nBack by vm.nBack.
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var audioSelected by remember { mutableStateOf(false) }
+    var visualSelected by remember { mutableStateOf(true)}
+
+    fun updateGameType(){
+        when{
+            audioSelected && visualSelected -> vm.setGameType(GameType.AudioVisual)
+            audioSelected -> vm.setGameType(GameType.Audio)
+            visualSelected -> vm.setGameType(GameType.Visual)
+            else -> vm.setGameType(GameType.Visual)
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) }
@@ -75,7 +88,6 @@ fun HomeScreen(
                 text = "High-Score = $highscore",
                 style = MaterialTheme.typography.headlineLarge
             )
-            // Todo: You'll probably want to change this "BOX" part of the composable
             Box(
                 modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center
@@ -90,7 +102,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Current N-Back: ${vm.nBack.value}",
+                        text = "Current N-Back: ${vm.nBack.collectAsState().value}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -99,9 +111,16 @@ fun HomeScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = {
-
-                    }) {
+                    Text(
+                        text = "Number of Events: ${vm.nrOfEvents.collectAsState().value}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = {},
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .height(60.dp)
+                            .width(200.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_settings_24),
                             contentDescription = "Settings icon",
@@ -114,7 +133,10 @@ fun HomeScreen(
 
             Button(
                 onClick = onStartGameClicked,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .height(60.dp)
+                    .width(200.dp)
             ) {
                 Text("Start Game".uppercase())
             }
@@ -126,13 +148,20 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
-                    vm.setGameType(GameType.Audio) // Todo: change this button behaviour, started
+                    audioSelected = !audioSelected
+                    updateGameType()
+
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = "Game type set to AUDIO"
+                            message = "AUDIO activated",
+                            duration = SnackbarDuration.Short
                         )
                     }
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if(audioSelected) Color.Green else Color.Gray
+                    )
+                    ) {
                     Icon(
                         painter = painterResource(id = R.drawable.sound_on),
                         contentDescription = "Sound",
@@ -143,13 +172,20 @@ fun HomeScreen(
                 }
                 Button(
                     onClick = {
-                        vm.setGameType(GameType.Visual) // Todo: change this button behaviour, started
+                        visualSelected = !visualSelected
+                        updateGameType()
+
                         scope.launch {
                             snackBarHostState.showSnackbar(
-                                message = "Game type set to VISUAL"
+                                message = "VISUAL activated",
+                                duration = SnackbarDuration.Short
                             )
                         }
-                    }) {
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if(visualSelected) Color.Green else Color.Gray
+                    )
+                    ) {
                     Icon(
                         painter = painterResource(id = R.drawable.visual),
                         contentDescription = "Visual",
