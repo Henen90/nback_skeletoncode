@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import mobappdev.example.nback_cimpl.ui.screens.GameScreen
 import mobappdev.example.nback_cimpl.ui.screens.HomeScreen
+import mobappdev.example.nback_cimpl.ui.screens.SettingScreen
 import mobappdev.example.nback_cimpl.ui.theme.NBack_CImplTheme
 import mobappdev.example.nback_cimpl.ui.viewmodels.GameVM
 
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
                         factory = GameVM.Factory
                     )
                     var showGameScreen by remember {mutableStateOf(false)}
+                    var showSettingScreen by remember {mutableStateOf(false)}
 
                     if(showGameScreen){
                         GameScreen(
@@ -56,12 +58,23 @@ class MainActivity : ComponentActivity() {
                             onStartGameClicked = {
                                 gameViewModel.startGame()
                         })
+                    } else if(showSettingScreen) {
+                        SettingScreen(
+                            vm = gameViewModel,
+                            onBackToMenuClicked = {
+                                showSettingScreen = false
+                            }
+                        )
                     } else {
                         HomeScreen(
                             vm = gameViewModel,
                             onStartGameClicked = {
                                 gameViewModel.startGame()
-                                showGameScreen = true}
+                                showGameScreen = true
+                            },
+                            onSettingsClicked = {
+                                showSettingScreen = true
+                            }
                         )
                     }
                 }

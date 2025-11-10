@@ -16,10 +16,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,9 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import mobappdev.example.nback_cimpl.R
 import mobappdev.example.nback_cimpl.ui.viewmodels.FakeVM
 import mobappdev.example.nback_cimpl.ui.viewmodels.GameType
@@ -55,7 +50,7 @@ import mobappdev.example.nback_cimpl.ui.viewmodels.GameViewModel
 
 @Composable
 fun HomeScreen(
-    vm: GameViewModel, onStartGameClicked: () -> Unit
+    vm: GameViewModel, onStartGameClicked: () -> Unit, onSettingsClicked: () -> Unit
 ) {
     val highscore by vm.highscore.collectAsState()  // Highscore is its own StateFlow
     val gameState by vm.gameState.collectAsState()
@@ -74,7 +69,6 @@ fun HomeScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackBarHostState) }
     ) {
         Column(
             modifier = Modifier
@@ -116,7 +110,7 @@ fun HomeScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = {},
+                    Button(onClick = onSettingsClicked,
                         modifier = Modifier
                             .padding(16.dp)
                             .height(60.dp)
@@ -150,19 +144,9 @@ fun HomeScreen(
                 Button(onClick = {
                     audioSelected = !audioSelected
                     updateGameType()
-
-                    scope.launch {
-                        snackBarHostState.showSnackbar(
-                            when {
-                                audioSelected && visualSelected -> "Game type set to AUDIOVISUAL"
-                                audioSelected -> "Game type set to VISUAL"
-                                else -> "AUDIO disabled"
-                            }
-                        )
-                    }
                 },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(audioSelected) Color.Green else Color.Gray
+                        containerColor = if(audioSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                     )
                     ) {
                     Icon(
@@ -177,19 +161,9 @@ fun HomeScreen(
                     onClick = {
                         visualSelected = !visualSelected
                         updateGameType()
-
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                when {
-                                    audioSelected && visualSelected -> "Game type set to AUDIOVISUAL"
-                                    visualSelected -> "Game type set to VISUAL"
-                                    else -> "VISUAL disabled"
-                                }
-                            )
-                        }
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(visualSelected) Color.Green else Color.Gray
+                        containerColor = if(visualSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                     )
                     ) {
                     Icon(
@@ -205,11 +179,11 @@ fun HomeScreen(
     }
 }
 
-@Preview
+/*@Preview
 @Composable
 fun HomeScreenPreview() {
     // Since I am injecting a VM into my homescreen that depends on Application context, the preview doesn't work.
     Surface(){
         HomeScreen(FakeVM()) {}
     }
-}
+}*/

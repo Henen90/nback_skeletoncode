@@ -133,7 +133,7 @@ class GameVM(
         if(_gameState.value.audioMatchChecked) return
         if(currentIndex < nBack.value) return
 
-        val currentAudioEventValue = _gameState.value.visualEventValue
+        val currentAudioEventValue = _gameState.value.audioEventValue
         val previouseAudioEventValue = audioEvents[currentIndex-nBack.value]
 
         if(currentAudioEventValue == previouseAudioEventValue){

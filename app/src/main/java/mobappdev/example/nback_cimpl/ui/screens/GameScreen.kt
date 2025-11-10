@@ -47,7 +47,7 @@ fun GameScreen(vm: GameViewModel, onBackToMenuClicked: () -> Unit, onStartGameCl
     val eventTic by vm.eventTic.collectAsState()
     val context = LocalContext.current
     var ttsReady by remember {mutableStateOf(false)}
-
+    val activeColor = MaterialTheme.colorScheme.tertiary
     val tts = remember {
         TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -99,10 +99,12 @@ LaunchedEffect(eventTic) {
 
                                 var color by remember { mutableStateOf(Color.LightGray) }
 
-                                LaunchedEffect(eventTic) {
+                                LaunchedEffect(eventTic, isActive, index) {
                                     if (isActive) {
-                                        color = Color.Green
+                                        color = activeColor
                                         delay(1000)
+                                        color = Color.LightGray
+                                    }else {
                                         color = Color.LightGray
                                     }
                                 }
