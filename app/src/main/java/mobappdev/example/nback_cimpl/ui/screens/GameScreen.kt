@@ -59,7 +59,7 @@ fun GameScreen(vm: GameViewModel, onBackToMenuClicked: () -> Unit, onStartGameCl
 LaunchedEffect(eventTic) {
     if ((ttsReady && gameState.gameType == GameType.Audio) || (ttsReady && gameState.gameType == GameType.AudioVisual)) {
         val letters = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I")
-        val letter = letters[gameState.eventValue - 1]
+        val letter = letters[gameState.audioEventValue - 1]
         println("Speaking letter: $letter")
         tts.language = Locale.US
         tts.speak(letter, TextToSpeech.QUEUE_FLUSH, null, null)
@@ -95,7 +95,7 @@ LaunchedEffect(eventTic) {
                         ) {
                             for (col in 0 until 3) {
                                 val index = row * 3 + col + 1
-                                val isActive = gameState.eventValue == index
+                                val isActive = gameState.visualEventValue == index
 
                                 var color by remember { mutableStateOf(Color.LightGray) }
 
@@ -133,15 +133,31 @@ LaunchedEffect(eventTic) {
 
             Text("Score: $score")
 
-            Button(
-                onClick = { vm.checkMatch() },
+            Row(
                 modifier = Modifier
-                    .padding(8.dp)
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Match!", style = MaterialTheme.typography.headlineSmall)
+                Button(
+                    onClick = { vm.checkVisualMatch() },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp)
+                ) {
+                    Text("Visual Match!", style = MaterialTheme.typography.headlineSmall)
+                }
+
+                Button(
+                    onClick = { vm.checkAudioMatch() },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(80.dp)
+                ) {
+                    Text("Audio Match!", style = MaterialTheme.typography.headlineSmall)
+                }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(

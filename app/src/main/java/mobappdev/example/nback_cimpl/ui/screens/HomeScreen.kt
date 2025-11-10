@@ -153,8 +153,11 @@ fun HomeScreen(
 
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = "AUDIO activated",
-                            duration = SnackbarDuration.Short
+                            when {
+                                audioSelected && visualSelected -> "Game type set to AUDIOVISUAL"
+                                audioSelected -> "Game type set to VISUAL"
+                                else -> "AUDIO disabled"
+                            }
                         )
                     }
                 },
@@ -177,8 +180,11 @@ fun HomeScreen(
 
                         scope.launch {
                             snackBarHostState.showSnackbar(
-                                message = "VISUAL activated",
-                                duration = SnackbarDuration.Short
+                                when {
+                                    audioSelected && visualSelected -> "Game type set to AUDIOVISUAL"
+                                    visualSelected -> "Game type set to VISUAL"
+                                    else -> "VISUAL disabled"
+                                }
                             )
                         }
                     },
