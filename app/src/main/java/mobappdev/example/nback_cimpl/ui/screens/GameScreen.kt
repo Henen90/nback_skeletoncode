@@ -45,6 +45,7 @@ fun GameScreen(vm: GameViewModel, onBackToMenuClicked: () -> Unit, onStartGameCl
     val gameState by vm.gameState.collectAsState()
     val score by vm.score.collectAsState()
     val eventTic by vm.eventTic.collectAsState()
+    val visualSize by vm.visualSize.collectAsState()
     val context = LocalContext.current
     var ttsReady by remember {mutableStateOf(false)}
     val activeColor = MaterialTheme.colorScheme.tertiary
@@ -55,10 +56,17 @@ fun GameScreen(vm: GameViewModel, onBackToMenuClicked: () -> Unit, onStartGameCl
             }
         }
     }
+    val gridSize = when (visualSize) {
+        9 -> 3
+        16 -> 4
+        25 -> 5
+        else -> 3
+    }
+    val boxSize = (300/ gridSize).dp
 
 LaunchedEffect(eventTic) {
     if ((ttsReady && gameState.gameType == GameType.Audio) || (ttsReady && gameState.gameType == GameType.AudioVisual)) {
-        val letters = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I")
+        val letters = listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z")
         val letter = letters[gameState.audioEventValue - 1]
         println("Speaking letter: $letter")
         tts.language = Locale.US
@@ -88,13 +96,13 @@ LaunchedEffect(eventTic) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    for (row in 0 until 3) {
+                    for (row in 0 until gridSize) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
-                            for (col in 0 until 3) {
-                                val index = row * 3 + col + 1
+                            for (col in 0 until gridSize) {
+                                val index = row * gridSize + col + 1
                                 val isActive = gameState.visualEventValue == index
 
                                 var color by remember { mutableStateOf(Color.LightGray) }
@@ -116,7 +124,7 @@ LaunchedEffect(eventTic) {
                                 Box(
                                     modifier = Modifier
                                         .padding(4.dp)
-                                        .size(100.dp)
+                                        .size(boxSize)
                                         .background(
                                             color = animatedColor,
                                             shape = RoundedCornerShape(12.dp)

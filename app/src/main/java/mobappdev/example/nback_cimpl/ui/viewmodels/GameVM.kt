@@ -42,6 +42,8 @@ interface GameViewModel {
     val eventInterval: StateFlow<Long>
     val eventTic: StateFlow<Int>
     val nrOfEvents: StateFlow<Int>
+    val visualSize: StateFlow<Int>
+    val audioSize: StateFlow<Int>
 
     fun setGameType(gameType: GameType)
     fun startGame()
@@ -50,11 +52,15 @@ interface GameViewModel {
 
     fun checkAudioMatch()
 
-    fun setNBack(int: Int)
+    fun setNBack(n: Int)
 
-    fun setEventInterval(long: Long)
+    fun setEventInterval(interval: Long)
 
-    fun setNrOfEvents(int: Int)
+    fun setNrOfEvents(nrOfEvents: Int)
+
+    fun setVisualSize(size: Int)
+
+    fun setAudioSize(size: Int)
 }
 
 class GameVM(
@@ -94,29 +100,45 @@ class GameVM(
     private var visualEvents = emptyArray<Int>()  // Array with all events
     private var audioEvents = emptyArray<Int>()
 
+    private val _visualSize = MutableStateFlow(9)
+    override val visualSize: StateFlow<Int>
+        get() = _visualSize
+
+    private val _audioSize = MutableStateFlow(9)
+    override val audioSize: StateFlow<Int>
+        get() = _audioSize
+
     override fun setGameType(gameType: GameType) {
         // update the gametype in the gamestate
         _gameState.value = _gameState.value.copy(gameType = gameType)
     }
 
-    override fun setNBack(nBack: Int){
-        _nBack.value = nBack
+    override fun setNBack(n: Int){
+        _nBack.value = n
     }
 
     override fun setEventInterval(interval: Long) {
         _eventInterval.value = interval
     }
 
-    override fun setNrOfEvents(events: Int){
-        _nrOfEvents.value = events
+    override fun setNrOfEvents(nrOfEvents: Int){
+        _nrOfEvents.value = nrOfEvents
+    }
+
+    override fun setVisualSize(size: Int) {
+        _visualSize.value = size
+    }
+
+    override fun setAudioSize(size: Int){
+        _audioSize.value = size
     }
 
     override fun startGame() {
         job?.cancel()  // Cancel any existing game loop
         _score.value = 0
         // Get the events from our C-model (returns IntArray, so we need to convert to Array<Int>)
-        visualEvents = nBackHelper.generateNBackString(nrOfEvents.value, 9, 30, nBack.value).toList().toTypedArray()  // Todo Higher Grade: currently the size etc. are hardcoded, make these based on user input
-        audioEvents = nBackHelper.generateNBackString(nrOfEvents.value, 9, 30, nBack.value).toList().toTypedArray()
+        visualEvents = nBackHelper.generateNBackString(nrOfEvents.value, visualSize.value, 30, nBack.value).toList().toTypedArray()
+        audioEvents = nBackHelper.generateNBackString(nrOfEvents.value, audioSize.value, 30, nBack.value).toList().toTypedArray()
         Log.d("GameVM", "The following visual sequence was generated: ${visualEvents.contentToString()}")
         Log.d("GameVM", "The following audio sequence was generated: ${audioEvents.contentToString()}")
 
@@ -164,6 +186,8 @@ class GameVM(
         _gameState.value = _gameState.value.copy(audioMatchChecked = true)
     }
     private suspend fun runVisualGame(events: Array<Int>) {
+        if(visualSize.value == 25) delay(1000L)
+        if(visualSize.value == 16) delay(500L)
         for ((index, value) in events.withIndex()) {
             currentIndex = index
             _gameState.value = _gameState.value.copy(
@@ -201,7 +225,6 @@ class GameVM(
                 audioMatchChecked = false
             )
 
-            // Trigga uppdatering i UI:t
             _eventTic.value += 1
 
             delay(_eventInterval.value)
@@ -258,6 +281,10 @@ class FakeVM: GameViewModel{
         get() = MutableStateFlow(0).asStateFlow()
     override val nrOfEvents: StateFlow<Int>
         get() = MutableStateFlow(10).asStateFlow()
+    override val visualSize: StateFlow<Int>
+        get() = MutableStateFlow(9).asStateFlow()
+    override val audioSize: StateFlow<Int>
+        get() = MutableStateFlow(9).asStateFlow()
 
     override fun setGameType(gameType: GameType) {
     }
@@ -271,12 +298,18 @@ class FakeVM: GameViewModel{
     override fun checkAudioMatch() {
     }
 
-    override fun setNBack(int: Int) {
+    override fun setNBack(n: Int) {
     }
 
-    override fun setEventInterval(long: Long) {
+    override fun setEventInterval(interval: Long) {
     }
 
-    override fun setNrOfEvents(int: Int){
+    override fun setNrOfEvents(nrOfEvents: Int){
+    }
+
+    override fun setVisualSize(size: Int) {
+    }
+
+    override fun setAudioSize(size: Int) {
     }
 }

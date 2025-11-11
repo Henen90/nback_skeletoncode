@@ -34,9 +34,13 @@ fun SettingScreen(vm: GameVM, onBackToMenuClicked: () -> Unit){
     var nValue by remember {mutableStateOf(2) }
     var eventInterval by remember {mutableStateOf(2000L)}
     var nrOfEvents by remember {mutableStateOf(10)}
+    var visualSize by remember {mutableStateOf(9)}
+    var audioSize by remember {mutableStateOf(9)}
     var expanded1 by remember {mutableStateOf(false)}
     var expanded2 by remember {mutableStateOf(false)}
     var expanded3 by remember {mutableStateOf(false)}
+    var expanded4 by remember {mutableStateOf(false)}
+    var expanded5 by remember {mutableStateOf(false)}
 
     Column(
         modifier = Modifier
@@ -80,6 +84,8 @@ fun SettingScreen(vm: GameVM, onBackToMenuClicked: () -> Unit){
                 }
             }
         }
+        Spacer(modifier = Modifier.height(8.dp))
+
         ExposedDropdownMenuBox(
             expanded = expanded2,
             onExpandedChange = {expanded2 = !expanded2}
@@ -111,6 +117,8 @@ fun SettingScreen(vm: GameVM, onBackToMenuClicked: () -> Unit){
                 }
             }
         }
+        Spacer(modifier = Modifier.height(8.dp))
+
         ExposedDropdownMenuBox(
             expanded = expanded3,
             onExpandedChange = {expanded3 = !expanded3}
@@ -142,10 +150,78 @@ fun SettingScreen(vm: GameVM, onBackToMenuClicked: () -> Unit){
                 }
             }
         }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ExposedDropdownMenuBox(
+            expanded = expanded4,
+            onExpandedChange = {expanded4 = !expanded4}
+        ) {
+            OutlinedTextField(
+                value = "Visual size: ${visualSize}",
+                onValueChange = {},
+                label = {Text("Select Size For Visual")},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded4)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(0.7f)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded4,
+                onDismissRequest = {expanded4 = false}
+            ) {
+                listOf(3, 4, 5).forEach { size ->
+                    DropdownMenuItem(
+                        text = {Text("${size}x${size}") },
+                        onClick = {
+                            visualSize = size*size
+                            expanded4 = false
+                        }
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        ExposedDropdownMenuBox(
+            expanded = expanded5,
+            onExpandedChange = {expanded5 = !expanded5}
+        ) {
+            OutlinedTextField(
+                value = "Audio size: ${audioSize}",
+                onValueChange = {},
+                label = {Text("Select Size For Audio")},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded5)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(0.7f)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded5,
+                onDismissRequest = {expanded5 = false}
+            ) {
+                (5 .. 26).forEach { size ->
+                    DropdownMenuItem(
+                        text = {Text("${size}") },
+                        onClick = {
+                            audioSize = size
+                            expanded5 = false
+                        }
+                    )
+                }
+            }
+        }
         Button(
             onClick = { vm.setNBack(nValue)
                         vm.setEventInterval(eventInterval)
                         vm.setNrOfEvents(nrOfEvents)
+                        vm.setVisualSize(visualSize)
+                        vm.setAudioSize(audioSize)
                       },
             modifier = Modifier
                 .padding(24.dp)

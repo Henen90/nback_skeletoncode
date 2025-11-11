@@ -54,8 +54,6 @@ fun HomeScreen(
 ) {
     val highscore by vm.highscore.collectAsState()  // Highscore is its own StateFlow
     val gameState by vm.gameState.collectAsState()
-    val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     var audioSelected by remember { mutableStateOf(false) }
     var visualSelected by remember { mutableStateOf(true)}
 
