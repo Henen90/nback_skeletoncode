@@ -39,7 +39,7 @@ interface GameViewModel {
     val score: StateFlow<Int>
     val highscore: StateFlow<Int>
     val nBack: StateFlow<Int>
-    val eventInterval: Long
+    val eventInterval: StateFlow<Long>
     val eventTic: StateFlow<Int>
     val nrOfEvents: StateFlow<Int>
 
@@ -49,6 +49,12 @@ interface GameViewModel {
     fun checkVisualMatch()
 
     fun checkAudioMatch()
+
+    fun setNBack(int: Int)
+
+    fun setEventInterval(long: Long)
+
+    fun setNrOfEvents(int: Int)
 }
 
 class GameVM(
@@ -78,7 +84,11 @@ class GameVM(
 
     private var currentIndex: Int =0
     private var job: Job? = null  // coroutine job for the game event
-    override val eventInterval: Long = 2000L  // 2000 ms (2s)
+
+    private val _eventInterval = MutableStateFlow(2000L)
+    override val eventInterval: StateFlow<Long>  // 2000 ms (2s)
+        get() = _eventInterval
+
 
     private val nBackHelper = NBackHelper()  // Helper that generate the event array
     private var visualEvents = emptyArray<Int>()  // Array with all events
@@ -87,6 +97,18 @@ class GameVM(
     override fun setGameType(gameType: GameType) {
         // update the gametype in the gamestate
         _gameState.value = _gameState.value.copy(gameType = gameType)
+    }
+
+    override fun setNBack(nBack: Int){
+        _nBack.value = nBack
+    }
+
+    override fun setEventInterval(interval: Long) {
+        _eventInterval.value = interval
+    }
+
+    override fun setNrOfEvents(events: Int){
+        _nrOfEvents.value = events
     }
 
     override fun startGame() {
@@ -149,7 +171,7 @@ class GameVM(
                 visualMatchChecked = false
             )
             _eventTic.value += 1
-            delay(eventInterval)
+            delay(_eventInterval.value)
         }
     }
 
@@ -161,7 +183,7 @@ class GameVM(
                 audioMatchChecked = false
             )
             _eventTic.value += 1
-            delay(eventInterval)
+            delay(_eventInterval.value)
         }
     }
 
@@ -182,7 +204,7 @@ class GameVM(
             // Trigga uppdatering i UI:t
             _eventTic.value += 1
 
-            delay(eventInterval)
+            delay(_eventInterval.value)
         }
     }
 
@@ -230,8 +252,8 @@ class FakeVM: GameViewModel{
         get() = MutableStateFlow(42).asStateFlow()
     override val nBack: StateFlow<Int>
         get() = MutableStateFlow(2).asStateFlow()
-    override val eventInterval: Long
-        get() = 2000L
+    override val eventInterval: StateFlow<Long>
+        get() = MutableStateFlow(2000L).asStateFlow()
     override val eventTic: StateFlow<Int>
         get() = MutableStateFlow(0).asStateFlow()
     override val nrOfEvents: StateFlow<Int>
@@ -247,5 +269,14 @@ class FakeVM: GameViewModel{
     }
 
     override fun checkAudioMatch() {
+    }
+
+    override fun setNBack(int: Int) {
+    }
+
+    override fun setEventInterval(long: Long) {
+    }
+
+    override fun setNrOfEvents(int: Int){
     }
 }

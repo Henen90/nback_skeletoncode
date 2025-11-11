@@ -101,7 +101,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Current Interval Time: ${vm.eventInterval / 1000} s",
+                        text = "Current Interval Time: ${vm.eventInterval.collectAsState().value / 1000} s",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(16.dp))

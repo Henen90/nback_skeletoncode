@@ -32,9 +32,11 @@ import mobappdev.example.nback_cimpl.ui.viewmodels.GameVM
 @Composable
 fun SettingScreen(vm: GameVM, onBackToMenuClicked: () -> Unit){
     var nValue by remember {mutableStateOf(2) }
+    var eventInterval by remember {mutableStateOf(2000L)}
+    var nrOfEvents by remember {mutableStateOf(10)}
     var expanded1 by remember {mutableStateOf(false)}
     var expanded2 by remember {mutableStateOf(false)}
-    var eventTimer by remember {mutableStateOf(2000)}
+    var expanded3 by remember {mutableStateOf(false)}
 
     Column(
         modifier = Modifier
@@ -83,7 +85,7 @@ fun SettingScreen(vm: GameVM, onBackToMenuClicked: () -> Unit){
             onExpandedChange = {expanded2 = !expanded2}
         ) {
             OutlinedTextField(
-                value = "Event timer: ${eventTimer/1000}s",
+                value = "Event timer: ${eventInterval/1000}s",
                 onValueChange = {},
                 label = {Text("Select Event Interval")},
                 readOnly = true,
@@ -102,15 +104,49 @@ fun SettingScreen(vm: GameVM, onBackToMenuClicked: () -> Unit){
                     DropdownMenuItem(
                         text = {Text("${ms/1000}s") },
                         onClick = {
-                            eventTimer = ms
+                            eventInterval = ms.toLong()
                             expanded2 = false
                         }
                     )
                 }
             }
         }
+        ExposedDropdownMenuBox(
+            expanded = expanded3,
+            onExpandedChange = {expanded3 = !expanded3}
+        ) {
+            OutlinedTextField(
+                value = "Nr of events: $nrOfEvents",
+                onValueChange = {},
+                label = {Text("Select Nr Of Events")},
+                readOnly = true,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded3)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(0.7f)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded3,
+                onDismissRequest = {expanded3 = false}
+            ) {
+                (10..50).forEach { n ->
+                    DropdownMenuItem(
+                        text = {Text("$n") },
+                        onClick = {
+                            nrOfEvents = n
+                            expanded3 = false
+                        }
+                    )
+                }
+            }
+        }
         Button(
-            onClick = { },
+            onClick = { vm.setNBack(nValue)
+                        vm.setEventInterval(eventInterval)
+                        vm.setNrOfEvents(nrOfEvents)
+                      },
             modifier = Modifier
                 .padding(24.dp)
                 .height(60.dp)
